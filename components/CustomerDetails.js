@@ -1,65 +1,87 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function CustomerDetails({ customerId }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+const CustomerDetails = ({ customer, onUpdate }) => {
+  const [name, setName] = useState(customer.name);
+  const [email, setEmail] = useState(customer.email);
+  const [phone, setPhone] = useState(customer.phone);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
 
-  const handleEdit = () => {
+  const handleUpdateClick = () => {
     setIsEditing(true);
   };
 
-  const handleUpdate = () => {
-    // Perform validation and update customer data
-    if (!name || !email || !phoneNumber) {
-      setError("All fields are required");
-      return;
-    }
-    // Update customer logic
-    // ...
-
+  const handleCancelClick = () => {
     setIsEditing(false);
+    setName(customer.name);
+    setEmail(customer.email);
+    setPhone(customer.phone);
   };
 
-  const handleDelete = () => {
-    // Perform deletion
-    // ...
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Client-side validation
+    const newErrors = {};
+    if (!name) newErrors.name = "Name is required";
+    if (!email) newErrors.email = "Email is required";
+    if (!phone) newErrors.phone = "Phone number is required";
+
+    if (Object.keys(newErrors).length === 0) {
+      onUpdate({ id: customer.id, name, email, phone });
+      setIsEditing(false);
+    } else {
+      setErrors(newErrors);
+    }
   };
 
   return (
     <div>
-      <p>Name: {name}</p>
-      <p>Email: {email}</p>
-      <p>Phone Number: {phoneNumber}</p>
+      <h2>Customer Details</h2>
       {isEditing ? (
-        <div>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="text"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <button onClick={handleUpdate}>Update</button>
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {errors.name && <span>{errors.name}</span>}
+          </div>
+          <div>
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {errors.email && <span>{errors.email}</span>}
+          </div>
+          <div>
+            <label>Phone Number</label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            {errors.phone && <span>{errors.phone}</span>}
+          </div>
+          <button type="submit">Update</button>
+          <button type="button" onClick={handleCancelClick}>
+            Cancel
+          </button>
+        </form>
       ) : (
         <div>
-          <button onClick={handleEdit}>Edit</button>
-          <button onClick={handleDelete}>Delete</button>
+          <p>Name: {customer.name}</p>
+          <p>Email: {customer.email}</p>
+          <p>Phone: {customer.phone}</p>
+          <button onClick={handleUpdateClick}>Edit</button>
         </div>
       )}
-      {error && <p>{error}</p>}
     </div>
   );
-}
+};
+
+export default CustomerDetails;

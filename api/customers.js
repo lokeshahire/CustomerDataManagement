@@ -1,51 +1,39 @@
 // pages/api/customers.js
+import nc from "next-connect";
 
 const customers = [
+  // Sample customer data (replace with your actual data)
+  { id: 1, name: "John Doe", email: "john@example.com", phone: "123-456-7890" },
   {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    phoneNumber: "123-456-7890",
+    id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    phone: "987-654-3210",
   },
-  // ... other customers ...
 ];
 
-export default function handler(req, res) {
-  if (req.method === "GET") {
-    // Handle GET request to fetch all customers
-    res.status(200).json(customers);
-  } else if (req.method === "POST") {
-    // Handle POST request to add a new customer
-    const newCustomer = req.body;
-    // Validate newCustomer data
-    // ...
-    customers.push(newCustomer);
-    res.status(201).json(newCustomer);
-  } else if (req.method === "PUT") {
-    // Handle PUT request to update a customer
-    const updatedCustomer = req.body;
-    const index = customers.findIndex(
-      (customer) => customer.id === updatedCustomer.id
-    );
-    if (index !== -1) {
-      customers[index] = updatedCustomer;
-      res.status(200).json(updatedCustomer);
-    } else {
-      res.status(404).json({ message: "Customer not found" });
-    }
-  } else if (req.method === "DELETE") {
-    // Handle DELETE request to delete a customer
-    const customerId = req.query.id;
-    const index = customers.findIndex(
-      (customer) => customer.id === parseInt(customerId)
-    );
-    if (index !== -1) {
-      customers.splice(index, 1);
-      res.status(204).end();
-    } else {
-      res.status(404).json({ message: "Customer not found" });
-    }
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
-  }
-}
+const handler = nc();
+
+handler.get((req, res) => {
+  res.status(200).json(customers);
+});
+
+handler.post((req, res) => {
+  const newCustomer = req.body;
+  // Implement add functionality here
+  res.status(201).json(newCustomer);
+});
+
+handler.put((req, res) => {
+  const updatedCustomer = req.body;
+  // Implement update functionality here
+  res.status(200).json(updatedCustomer);
+});
+
+handler.delete((req, res) => {
+  const customerId = req.body.id;
+  // Implement delete functionality here
+  res.status(200).json({ message: "Customer deleted successfully" });
+});
+
+export default handler;

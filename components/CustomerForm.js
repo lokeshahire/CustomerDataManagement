@@ -1,49 +1,66 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function CustomerForm() {
+const CustomerForm = ({ onSubmit }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [error, setError] = useState("");
+  const [phone, setPhone] = useState("");
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Perform validation and submit data
-    if (!name || !email || !phoneNumber) {
-      setError("All fields are required");
-      return;
-    }
-    // Add customer logic
-    // ...
 
-    // Clear form fields
-    setName("");
-    setEmail("");
-    setPhoneNumber("");
+    // Client-side validation
+    const newErrors = {};
+    if (!name) newErrors.name = "Name is required";
+    if (!email) newErrors.email = "Email is required";
+    if (!phone) newErrors.phone = "Phone number is required";
+
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit({ name, email, phone });
+      setName("");
+      setEmail("");
+      setPhone("");
+      // console.log("data", { name, email, phone });
+    } else {
+      setErrors(newErrors);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Phone Number"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-      />
-      <button type="submit">Add Customer</button>
-      {error && <p>{error}</p>}
-    </form>
+    <div>
+      <h2>Add Customer</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          {errors.name && <span>{errors.name}</span>}
+        </div>
+        <div>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {errors.email && <span>{errors.email}</span>}
+        </div>
+        <div>
+          <label>Phone Number</label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          {errors.phone && <span>{errors.phone}</span>}
+        </div>
+        <button type="submit">Add Customer</button>
+      </form>
+    </div>
   );
-}
+};
+
+export default CustomerForm;
